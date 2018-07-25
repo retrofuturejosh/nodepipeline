@@ -215,13 +215,13 @@ Resources:
                 - npm run lint
             build:
               commands:
-                - npm run test > test.out
+                - npm test
           artifacts:
             files:
               - test.out
       Environment:
         Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_LARGE
+        ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/nodejs:6.3.1
 
 

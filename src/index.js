@@ -1,2 +1,1 @@
-let app = require('./app');
-app.listen(4040);
+module.exports = "This is an app.";
