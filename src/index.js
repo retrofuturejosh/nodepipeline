@@ -1,1 +1,1 @@
-module.exports = "This is an app.";
+module.exports = "This is an app."
