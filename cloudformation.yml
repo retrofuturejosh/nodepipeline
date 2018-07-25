@@ -191,23 +191,24 @@ Resources:
     Properties:
       RepositoryName: !Join [ "/", [ !Ref GitHubRepoOwner, !Ref GitHubRepoName ]]
 
-
-  CodeBuildTest:
+  CodeBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: !Join [ "-", [ !Ref GitHubRepoName, "test" ]]
-      Description: CodeBuild project for running Node tests
+      Name: !Ref GitHubRepoName
       ServiceRole: !GetAtt CodeBuildRole.Arn
       Artifacts:
         Name: !Ref GitHubRepoName
         Type: CODEPIPELINE
         Packaging: NONE
-      Source:
-        Type: CODEPIPELINE
       Environment:
         Type: LINUX_CONTAINER
+        # ComputeType options: BUILD_GENERAL1_SMALL, BUILD_GENERAL1_MEDIUM, BUILD_GENERAL1_LARGE
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/nodejs:6.3.1
+        # Run `aws codebuild list-curated-environment-images` for a complete list of images provided.
+        Image: aws/codebuild/nodejs:7.0.0
+      Source:
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 10
 
 
   CodePipeline:
@@ -236,7 +237,7 @@ Resources:
                 OAuthToken: !Ref GitHubToken
               RunOrder: 1
         -
-        - Name: Test
+          Name: Test
           Actions:
             - Name: CodeBuild
               ActionTypeId:
