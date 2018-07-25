@@ -204,21 +204,6 @@ Resources:
         Packaging: NONE
       Source:
         Type: CODEPIPELINE
-        BuildSpec: |
-          version: 0.1
-          phases:
-            install:
-              commands:
-                - npm install
-            pre_build:
-              commands:
-                - npm run lint
-            build:
-              commands:
-                - npm test
-          artifacts:
-            files:
-              - test.out
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
@@ -243,7 +228,7 @@ Resources:
                 Version: 1
               OutputArtifacts:
                 -
-                  Name: SourceOutput
+                  Name: SourceCodeOutputArtifact
               Configuration:
                 Owner: !Ref GitHubRepoOwner
                 Repo: !Ref GitHubRepoName
@@ -251,24 +236,21 @@ Resources:
                 OAuthToken: !Ref GitHubToken
               RunOrder: 1
         -
-          Name: Test
+        - Name: Test
           Actions:
-              -
-                Name: RunTests
-                ActionTypeId:
-                  Category: Build
-                  Owner: AWS
-                  Provider: CodeBuild
-                  Version: 1
-                InputArtifacts:
-                  -
-                    Name: SourceOutput
-                OutputArtifacts:
-                  -
-                    Name: TestOutput
-                Configuration:
-                  ProjectName: !Ref CodeBuildTest
-                RunOrder: 1
+            - Name: CodeBuild
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              InputArtifacts:
+                - Name: SourceCodeOutputArtifact
+              OutputArtifacts:
+                - Name: BuildOutputArtifact
+              Configuration:
+                ProjectName: !Ref GitHubRepoName
+              RunOrder: 1
 
       ArtifactStore:
         Type: S3
