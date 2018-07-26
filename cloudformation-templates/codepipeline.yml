@@ -185,6 +185,23 @@ Resources:
               Configuration:
                 ProjectName: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch ] ]
               RunOrder: 1
+        -
+          Name: Deploy
+          Actions:
+            -
+              Name: DeployAction
+              InputArtifacts:
+              -
+                Name: BuildOutputArtifact
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: CodeDeploy
+              Configuration:
+                ApplicationName: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch ] ]
+                DeploymentGroupName: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch ] ]
+              RunOrder: 1
 
       ArtifactStore:
         Type: S3

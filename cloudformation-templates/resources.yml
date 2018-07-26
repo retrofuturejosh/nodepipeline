@@ -20,11 +20,36 @@ Parameters:
     Description: S3 Bucket where artifacts will be stored
 Resources:
 
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-b70554c8
+      Tags:
+        -
+          Key: name
+          Value: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch ] ]
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash -xe
+            yum -y update
+            yum install -y ruby
+            yum install -y aws-cli
+            cd /home/ec2-user
+            aws s3 cp s3://aws-codedeploy-us-east-1/latest/install . --region us-east-1
+            chmod +x ./install
+            ./install auto
+            curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash
+            . ~/.nvm/nvm.sh
+            nvm install 6.3.1
+            node -e "console.log('Running Node.js ' + process.version)"
+
   ArtifactBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
     Properties:
       BucketName: !Ref S3ArtifactStore
+
 
   CodeBuildRole:
     Type: "AWS::IAM::Role"
@@ -111,3 +136,57 @@ Resources:
       Source:
         Type: CODEPIPELINE
       TimeoutInMinutes: 10
+
+
+  CodeDeployTrustRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Sid: "1"
+            Effect: Allow
+            Principal:
+              Service:
+                - codedeploy.us-east-1.amazonaws.com
+            Action: sts:AssumeRole
+      Path: "/"
+
+  CodeDeployRolePolicies:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: CodeDeployPolicy
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Resource: "*"
+            Action:
+              - ec2:Describe*
+          - Effect: Allow
+            Resource: "*"
+            Action:
+              - autoscaling:CompleteLifecycleAction
+              - autoscaling:DeleteLifecycleHook
+              - autoscaling:DescribeLifecycleHooks
+              - autoscaling:DescribeAutoScalingGroups
+              - autoscaling:PutLifecycleHook
+              - autoscaling:RecordLifecycleActionHeartbeat
+      Roles:
+        - !Ref CodeDeployTrustRole
+
+  DeployApplication:
+    Type: "AWS::CodeDeploy::Application"
+    Properties:
+      ApplicationName: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch ] ]
+
+  DeploymentGroup:
+    Type: AWS::CodeDeploy::DeploymentGroup
+    DependsOn: DeployApplication
+    Properties:
+      ApplicationName: !Ref DeployApplication
+      DeploymentConfigName: CodeDeployDefault.AllAtOnce
+      DeploymentGroupName: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch ] ]
+      Ec2TagFilters:
+        - Key: name
+          Value: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch ] ]
+          Type: KEY_AND_VALUE
+      ServiceRoleArn: !GetAtt [CodeDeployTrustRole, Arn]
