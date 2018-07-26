@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint --ignore-path .gitignore .",
     "test": "mocha",
-    "start": "node src"
+    "start": "node src",
+    "cloudformation": "bash ./scripts/start.sh"
   },
   "keywords": [],
   "author": "",

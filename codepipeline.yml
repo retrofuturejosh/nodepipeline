@@ -20,12 +20,6 @@ Parameters:
     Description: S3 Bucket where artifacts will be stored
 Resources:
 
-  ArtifactBucket:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
-    Properties:
-      BucketName: !Ref S3ArtifactStore
-
   CodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
@@ -134,87 +128,10 @@ Resources:
                     - "codebuild:StartBuild"
                   Resource: "*"
 
-  CodeBuildRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      Path: "/"
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          -
-            Effect: Allow
-            Principal:
-              Service:
-                - "codebuild.amazonaws.com"
-            Action:
-              - "sts:AssumeRole"
-      Policies:
-        -
-          PolicyName: CodeBuildPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              -
-                Effect: Allow
-                Action:
-                  - "logs:CreateLogGroup"
-                  - "logs:CreateLogStream"
-                  - "logs:PutLogEvents"
-                Resource:
-                  - "arn:aws:logs:*:*:log-group:/aws/codebuild/*"
-              -
-                Effect: Allow
-                Action:
-                  - "s3:GetObject"
-                  - "s3:GetObjectVersion"
-                  - "s3:PutObject"
-                Resource: "arn:aws:s3:::codepipeline-*/*"
-              -
-                Effect: Allow
-                Action:
-                  - "ecr:CreateRepository"
-                Resource: "*"
-              -
-                Effect: Allow
-                Action:
-                  - "ecr:BatchCheckLayerAvailability"
-                  - "ecr:CompleteLayerUpload"
-                  - "ecr:GetAuthorizationToken"
-                  - "ecr:InitiateLayerUpload"
-                  - "ecr:PutImage"
-                  - "ecr:UploadLayerPart"
-                Resource: "*"
-
-
-  EcrRepository:
-    Type: AWS::ECR::Repository
-    Properties:
-      RepositoryName: !Join [ "/", [ !Ref GitHubRepoOwner, !Ref GitHubRepoName ]]
-
-  CodeBuildProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Name: !Ref GitHubRepoName
-      ServiceRole: !GetAtt CodeBuildRole.Arn
-      Artifacts:
-        Name: !Ref GitHubRepoName
-        Type: CODEPIPELINE
-        Packaging: NONE
-      Environment:
-        Type: LINUX_CONTAINER
-        # ComputeType options: BUILD_GENERAL1_SMALL, BUILD_GENERAL1_MEDIUM, BUILD_GENERAL1_LARGE
-        ComputeType: BUILD_GENERAL1_SMALL
-        # Run `aws codebuild list-curated-environment-images` for a complete list of images provided.
-        Image: aws/codebuild/nodejs:7.0.0
-      Source:
-        Type: CODEPIPELINE
-      TimeoutInMinutes: 10
-
-
   CodePipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
-      Name: !Ref GitHubRepoName
+      Name: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch ] ]
       RoleArn: !GetAtt CodePipelineRole.Arn
       Stages:
         -
@@ -248,11 +165,27 @@ Resources:
               InputArtifacts:
                 - Name: SourceCodeOutputArtifact
               OutputArtifacts:
+                - Name: TestOutputArtifact
+              Configuration:
+                ProjectName: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch, test ] ]
+              RunOrder: 1
+        -
+          Name: Build
+          Actions:
+            - Name: CodeBuild
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              InputArtifacts:
+                - Name: SourceCodeOutputArtifact
+              OutputArtifacts:
                 - Name: BuildOutputArtifact
               Configuration:
-                ProjectName: !Ref GitHubRepoName
+                ProjectName: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch ] ]
               RunOrder: 1
 
       ArtifactStore:
         Type: S3
-        Location: !Ref ArtifactBucket
+        Location: !Ref S3ArtifactStore
