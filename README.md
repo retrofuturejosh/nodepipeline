@@ -4,9 +4,11 @@
 
 
 resources.yml - define all the resources needed for project
--role/policies
+-roles/policies
 -S3 bucket to store code source and builds
 -codebuild project
+-codedeploy application
+-codedeploy settings
 -ec2 instances
 
 codepipeline.yml - defines codepipeline

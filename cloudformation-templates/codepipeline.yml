@@ -23,6 +23,12 @@ Parameters:
     Description: Existing KeyName for EC2 instance
 Resources:
 
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Ref S3ArtifactStore
+
   CodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
