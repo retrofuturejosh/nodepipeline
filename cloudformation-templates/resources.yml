@@ -84,7 +84,6 @@ Resources:
         Fn::Base64:
           !Sub |
             #!/bin/bash -xe
-            sudo su
             yum -y update
             yum install -y ruby
             yum install -y aws-cli
