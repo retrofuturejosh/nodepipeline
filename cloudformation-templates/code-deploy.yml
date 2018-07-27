@@ -22,7 +22,6 @@ Parameters:
     Type: String
     Description: Existing KeyName for EC2 instance
 Resources:
-
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -60,8 +59,6 @@ Resources:
                   - "s3:List*"
                 Resource: "*"
 
-
-
   EC2InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
@@ -95,100 +92,6 @@ Resources:
             sudo yum -y install nodejs
             cd /var
             mkdir nodeapp
-
-  ArtifactBucket:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
-    Properties:
-      BucketName: !Ref S3ArtifactStore
-
-
-  CodeBuildRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      Path: "/"
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          -
-            Effect: Allow
-            Principal:
-              Service:
-                - "codebuild.amazonaws.com"
-            Action:
-              - "sts:AssumeRole"
-      Policies:
-        -
-          PolicyName: CodeBuildPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              -
-                Effect: Allow
-                Action:
-                  - "logs:CreateLogGroup"
-                  - "logs:CreateLogStream"
-                  - "logs:PutLogEvents"
-                Resource:
-                  - "arn:aws:logs:*:*:log-group:/aws/codebuild/*"
-              -
-                Effect: Allow
-                Action:
-                  - "s3:GetObject"
-                  - "s3:GetObjectVersion"
-                  - "s3:PutObject"
-                Resource: "arn:aws:s3:::codepipeline-*/*"
-
-  TestCodeBuildProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Name: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch, test ] ]
-      Description: CodeBuild project for running Node tests
-      ServiceRole: !GetAtt CodeBuildRole.Arn
-      Artifacts:
-        Name: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch, test ] ]
-        Type: CODEPIPELINE
-        Packaging: NONE
-      Source:
-        Type: CODEPIPELINE
-        BuildSpec: |
-          version: 0.1
-          phases:
-            install:
-              commands:
-                - npm install
-                - npm install -g mocha
-            pre_build:
-              commands:
-                - npm run lint
-            build:
-              commands:
-                - npm test
-      TimeoutInMinutes: 10
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_LARGE
-        Image: aws/codebuild/nodejs:6.3.1
-
-  CodeBuildProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Name: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch ] ]
-      ServiceRole: !GetAtt CodeBuildRole.Arn
-      Artifacts:
-        Name: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch ] ]
-        Type: CODEPIPELINE
-        Packaging: NONE
-      Environment:
-        Type: LINUX_CONTAINER
-        # ComputeType options: BUILD_GENERAL1_SMALL, BUILD_GENERAL1_MEDIUM, BUILD_GENERAL1_LARGE
-        ComputeType: BUILD_GENERAL1_SMALL
-        # Run `aws codebuild list-curated-environment-images` for a complete list of images provided.
-        Image: aws/codebuild/nodejs:7.0.0
-      Source:
-        Type: CODEPIPELINE
-      TimeoutInMinutes: 10
-
 
   CodeDeployTrustRole:
     Type: AWS::IAM::Role
