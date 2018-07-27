@@ -1,1 +1,2 @@
-module.exports = "This is an app.";
+const app = require('./app');
+app.listen(8080);

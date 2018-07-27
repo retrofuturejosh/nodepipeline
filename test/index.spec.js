@@ -1,8 +1,10 @@
-let app = require('../src');
-let expect = require('chai').expect;
+let request = require('supertest');
+let app = require('../src/app');
 
-describe('App', () => {
-  it('should have the correct string', () => {
-    expect(app).to.equal('This is an app.');
+describe('GET /', () => {
+  it('should return hello world', (done) => {
+    request(app)
+      .get('/')
+      .expect('hello world', done);
   });
 });
