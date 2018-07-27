@@ -91,8 +91,7 @@ Resources:
             wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
             chmod +x ./install
             ./install auto
-            cd /
-            mkdir .nvm
+            touch ~/.bash_profile
             curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash
             . /.nvm/nvm.sh
             nvm install 6.3.1
