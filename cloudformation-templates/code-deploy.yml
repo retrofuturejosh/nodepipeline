@@ -73,6 +73,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       IamInstanceProfile: !Ref EC2InstanceProfile
+      InstanceType: t2.nano
       ImageId: ami-b70554c8
       SecurityGroups:
       - Ref: InstanceSecurityGroup
@@ -96,6 +97,15 @@ Resources:
             sudo yum -y install nodejs
             cd /var
             mkdir nodeapp
+
+  AutoScaleGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AvailabilityZones:
+        Fn::GetAZs: "us-east-1"
+      LaunchConfigurationName: !Ref EC2Instance
+      MinSize: "2"
+      MaxSize: "2"
 
   CodeDeployTrustRole:
     Type: AWS::IAM::Role
