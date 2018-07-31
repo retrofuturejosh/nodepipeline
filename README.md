@@ -5,7 +5,7 @@ This is a CI/CD strategy for a simple Node/Express application integrating CodeB
 
 ## Diagram Overview
 
-[diagram]: https://s3.amazonaws.com/sohnbucket/Node+Pipeline+Chart.png "Diagram"
+[![diagram](https://s3.amazonaws.com/sohnbucket/Node+Pipeline+Chart.png "Diagram")](https://s3.amazonaws.com/sohnbucket/Node+Pipeline+Chart.png)
 
 ## File Structure
 
