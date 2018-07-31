@@ -3,6 +3,10 @@
 
 This is a CI/CD strategy for a simple Node/Express application integrating CodeBuild, CodeDeploy, and CodePipeline. It is advisable to understand the purpose and functionality of these individual AWS services and how they fit together to create a CI/CD pipeline.
 
+## Diagram Overview
+
+[diagram]: https://s3.amazonaws.com/sohnbucket/Node+Pipeline+Chart.png "Diagram"
+
 ## File Structure
 
 ### Root Folder
@@ -35,7 +39,15 @@ npm test
 Commit this repo to GitHub and note the repo name and branch you'd like to track for deployment.
 
 ### Add parameters.json
-Retrieve a GitHub token that allows AWS to source and watch your repo. You must also retrieve an existing key name for your EC2 instances (or create a new key in the EC2 console). Create a file named parameters.json in the cloudformation-templates folder that follows the given pattern:
+Retrieve a GitHub token that allows AWS to source and watch your repo.
+
+[How to retrieve a token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
+
+You must also retrieve an existing key name for your EC2 instances (or create a new key in the EC2 console).
+
+[How to create a key pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair)
+
+Create a file named parameters.json in the cloudformation-templates folder that follows the given pattern:
 ```
 [
   {
@@ -127,6 +139,9 @@ If the test build passes, the pipeline continues with the deployment build. The 
 ## CodeDeploy Notes
 Deployment will largely depend on the needs of your specific app. In this boilerplate, an autoscaling group of EC2 instances is deployed. The configuration of your deployment is largely defined in the code-deploy.yml template. It's important to note that if you change the name of your deployment application or deployment group, that change will need to be reflected in the 'Deploy' phase of your CodePipeline, located in codepipeline.yml.
 
+## TroubleShooting
+The AWS Console is useful for troubleshooting errors in the pipeline process. To debug any issues in the creation of your CloudFormation resources, use the CloudFormation console. If the CloudFormation templates have been succesfully created, the CodePipeline console helps debug errors that occur during the source/test/build/deploy phases of the pipeline. If you find that your deploy phase is failing, the best pace to troubleshoot is the CodeDeploy console. The instance 'events' logging feature is particularly useful. You can find it by navigating to the CodeDeploy Console > Deployments > Click on Deployment ID > Click 'View Events' for the latest Instance ID.
+
 ## Helpful Resources
 
 #### CodeBuild
@@ -143,3 +158,11 @@ Deployment will largely depend on the needs of your specific app. In this boiler
 [CodePipeline Docs](https://docs.aws.amazon.com/codepipeline/latest/userguide/welcome.html)
 
 [CodePipeline Cloudformation Docs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codepipeline-pipeline.html)
+
+#### EC2 Key Pair
+[How to create a key pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair)
+
+
+#### GitHub
+
+[How to retrieve a GitHub token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
