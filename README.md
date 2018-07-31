@@ -3,26 +3,34 @@
 
 This is a CI/CD strategy for a simple Node/Express application integrating CodeBuild, CodeDeploy, and CodePipeline. It is advisable to understand the purpose and functionality of these individual AWS services and how they fit together to create a CI/CD pipeline.
 
+## Table of Contents
+
+- [Diagram Overview](#diagram-overview)
+- [Getting Started](#getting-started)
+  * [Lint/Test](#linttest)
+  * [Commit to GitHub](#commit-to-github)
+  * [Add Parameters](#add-parametersjson)
+  * [Cloudformation Scripts](#run-cloudformation-script)
+- [Codebase File Structure](#codebase-file-structure)
+  * [Root Folder](#root-folder)
+  * [/cloudformation-templates](#cloudformation-templates)
+  * [/scripts](#scripts)
+  * [/test](#test)
+  * [/src](#src)
+- [CloudFormation Stacks](#cloudformation-stacks)
+  * [CodeBuild](#codebuild)
+  * [CodeDeploy](#codedeploy)
+  * [CodePipeline](#codepipeline)
+- [CodeBuild Notes](#codebuild-notes)
+  * [Test Build](#test-build)
+  * [Build for Deployment](#build-for-deployment)
+- [CodeDeploy Notes](#codedeploy-notes)
+- [Troubleshooting](#troubleshooting)
+- [Helpful Resources](#helpful-resources)
+
 ## Diagram Overview
 
 [![diagram](https://s3.amazonaws.com/sohnbucket/Node+Pipeline+Chart.png "Diagram")](https://s3.amazonaws.com/sohnbucket/Node+Pipeline+Chart.png)
-
-## File Structure
-
-### Root Folder
-The root folder contains buildspec.yml and appspec.yml files for CodeBuild and CodeDeploy respectively. Note that .eslintrc.json is included for linting during the build/test process in the cloud. It should not be included in the .gitignore file for this reason (unless linting is done via an additional npm package and script). The root folder also includes standard Node/Git project files: package.json and .gitignore.
-
-### /cloudformation-templates
-The cloudformation-templates folder contains the necessary CloudFormation templates for CodeBuild, CodeDeploy, and CodePipeline as well as parameters.json (which is .gitignored since it contains a GitHub token).
-
-### /scripts
-The scripts folder contains script files related to the project.
-
-### /test
-The test folder contains spec files for unit testing. In this boilerplate, Mocha/SuperTest are used as a testing suite.
-
-### /src
-All code related to the Node App should be located in the /src folder.
 
 ## Getting Started
 ```
@@ -78,7 +86,7 @@ Create a file named parameters.json in the cloudformation-templates folder that 
 ```
 
 ### Run CloudFormation Script
-This script will create the necessary resources for your CodeBuild projects (test & deployment), CodeDeploy application/group, and CodePipeline. It is highly likely you will need to edit these resources for your particular app's needs. You can deploy all the resources with the following command:
+This script will create the necessary resources for your CodeBuild projects (test & deployment), CodeDeploy application/group, and CodePipeline. It is highly likely you will need to edit these resources for your particular app's needs. You can deploy all the resources and trigger pipeline with the following command:
 ```
 npm run cloudformation
 ```
@@ -88,6 +96,23 @@ npm run cloudformation-build
 npm run cloudformation-deploy
 npm run cloudformation-pipeline
 ```
+
+## Codebase File Structure
+
+### Root Folder
+The root folder contains buildspec.yml and appspec.yml files for CodeBuild and CodeDeploy respectively. Note that .eslintrc.json is included for linting during the build/test process in the cloud. It should not be included in the .gitignore file for this reason (unless linting is done via an additional npm package and script). The root folder also includes standard Node/Git project files: package.json and .gitignore.
+
+### /cloudformation-templates
+The cloudformation-templates folder contains the necessary CloudFormation templates for CodeBuild, CodeDeploy, and CodePipeline as well as parameters.json (which is .gitignored since it contains a GitHub token).
+
+### /scripts
+The scripts folder contains script files related to the project.
+
+### /test
+The test folder contains spec files for unit testing. In this boilerplate, Mocha/SuperTest are used as a testing suite.
+
+### /src
+All code related to the Node App should be located in the /src folder.
 
 ## CloudFormation Stacks
 
