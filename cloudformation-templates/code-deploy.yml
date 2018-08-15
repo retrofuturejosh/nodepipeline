@@ -102,7 +102,8 @@ Resources:
         Fn::GetAZs: "us-east-1"
       MinSize: "2"
       MaxSize: "2"
-      LoadBalancerNames: !Ref LoadBalancer
+      LoadBalancerNames:
+        - !Ref LoadBalancer
       Tags:
         -
           Key: name
@@ -111,10 +112,13 @@ Resources:
 
   LoadBalancer:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
-    Listeners:
-    - LoadBalancerPort: '8080'
-      InstancePort: '8080'
-      Protocol: TCP
+    Properties:
+      AvailabilityZones:
+        Fn::GetAZs: "us-east-1"
+      Listeners:
+      - LoadBalancerPort: '8080'
+        InstancePort: '8080'
+        Protocol: TCP
 
   CodeDeployTrustRole:
     Type: AWS::IAM::Role
