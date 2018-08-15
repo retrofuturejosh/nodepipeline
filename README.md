@@ -130,6 +130,7 @@ The code-deploy.yml CloudFormation template creates the following resources:
 * EC2 Instance Profile with aforementioned IAM Role attached
 * EC2 LaunchConfiguration with UserData script that installs Ruby, AWS-CLI, CodeDeploy software, and NodeJS (You'll likely want to edit the InstanceType and configure additional parameters for your specific project.)
 * AutoScalingGroup with tags necessary for CodeDeploy (You'll likely want to edit MinSize, MaxSize, Availability Zones, and configure additional parameters for your specific project)
+* Elastic Load Balancer connected to Autoscaling Group, listening on port 80
 * IAM Role and Policy for CodeDeploy
 * CodeDeploy Application with EC2 TagFilters referencing the tags attached to the AutoScaling Group
 

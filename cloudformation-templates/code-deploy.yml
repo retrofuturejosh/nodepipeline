@@ -118,7 +118,7 @@ Resources:
       Listeners:
       - LoadBalancerPort: '80'
         InstancePort: '80'
-        Protocol: TCP
+        Protocol: HTTP
 
   CodeDeployTrustRole:
     Type: AWS::IAM::Role
@@ -172,3 +172,8 @@ Resources:
           Value: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch ] ]
           Type: KEY_AND_VALUE
       ServiceRoleArn: !GetAtt [CodeDeployTrustRole, Arn]
+
+Outputs:
+  URL:
+    Description: URL of the website
+    Value: !GetAtt LoadBalancer.DNSName
