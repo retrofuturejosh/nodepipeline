@@ -115,10 +115,18 @@ Resources:
     Properties:
       AvailabilityZones:
         Fn::GetAZs: "us-east-1"
+      SecurityGroups:
+      - !GetAtt InstanceSecurityGroup.GroupId
       Listeners:
       - LoadBalancerPort: '80'
         InstancePort: '80'
         Protocol: HTTP
+      HealthCheck:
+        HealthyThreshold: 5
+        Interval: 30
+        Target: HTTP:80/
+        Timeout: 10
+        UnhealthyThreshold: 5
 
   CodeDeployTrustRole:
     Type: AWS::IAM::Role
