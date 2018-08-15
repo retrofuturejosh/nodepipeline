@@ -116,8 +116,8 @@ Resources:
       AvailabilityZones:
         Fn::GetAZs: "us-east-1"
       Listeners:
-      - LoadBalancerPort: '8080'
-        InstancePort: '8080'
+      - LoadBalancerPort: '80'
+        InstancePort: '80'
         Protocol: TCP
 
   CodeDeployTrustRole:
