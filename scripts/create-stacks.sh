@@ -27,5 +27,4 @@ aws cloudformation wait stack-create-complete --stack-name node-pipeline-stack
 echo getting elastic load balancer URL
 aws cloudformation describe-stacks --stack-name node-app-codedeploy-resources  --query 'Stacks[0].Outputs[?OutputKey==`URL`].OutputValue'
 
-echo succesfully created resources and pipeline
 exit

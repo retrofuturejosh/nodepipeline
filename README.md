@@ -90,6 +90,8 @@ This script will create the necessary resources for your CodeBuild projects (tes
 ```
 npm run cloudformation
 ```
+After all the AWS resources are successfully created, an Elastic Load Balancer URL will be returned in your terminal. This URL will not work until the CodePipeline has completed a full execution and successfully deployed.
+
 You can also deploy individual parts of the CloudFormation stack with the following commands:
 ```
 npm run cloudformation-build
@@ -125,7 +127,7 @@ The code-build.yml CloudFormation template creates the following resources:
 
 ### CodeDeploy
 The code-deploy.yml CloudFormation template creates the following resources:
-* Instance Security Group with ports 22 and 8080 availaible to all IPs (You'll likely want to change these security protocols.)
+* Instance Security Group with ports 22 and 80 availaible to all IPs (You'll likely want to change these security protocols.)
 * IAM Role for EC2 instance with IAM Policy allowing Get and List access to S3
 * EC2 Instance Profile with aforementioned IAM Role attached
 * EC2 LaunchConfiguration with UserData script that installs Ruby, AWS-CLI, CodeDeploy software, and NodeJS (You'll likely want to edit the InstanceType and configure additional parameters for your specific project.)
