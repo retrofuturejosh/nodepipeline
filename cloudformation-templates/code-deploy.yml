@@ -25,15 +25,15 @@ Resources:
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Open ports 22 and 8080
+      GroupDescription: Open ports 22 and 80
       SecurityGroupIngress:
       - IpProtocol: tcp
         FromPort: '22'
         ToPort: '22'
         CidrIp: 0.0.0.0/0
       - IpProtocol: tcp
-        FromPort: '8080'
-        ToPort: '8080'
+        FromPort: '80'
+        ToPort: '80'
         CidrIp: 0.0.0.0/0
 
   EC2InstanceRole:
