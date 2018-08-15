@@ -73,7 +73,7 @@ Resources:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
       IamInstanceProfile: !Ref EC2InstanceProfile
-      InstanceType: t2.nano
+      InstanceType: t2.micro
       ImageId: ami-b70554c8
       LaunchConfigurationName: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch, 'LaunchConfiguration' ] ]
       SecurityGroups:
@@ -122,10 +122,10 @@ Resources:
         InstancePort: '80'
         Protocol: HTTP
       HealthCheck:
-        HealthyThreshold: 5
+        HealthyThreshold: 2
         Interval: 30
         Target: HTTP:80/
-        Timeout: 10
+        Timeout: 5
         UnhealthyThreshold: 5
 
   CodeDeployTrustRole:
