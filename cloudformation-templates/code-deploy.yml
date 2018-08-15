@@ -85,14 +85,14 @@ Resources:
             yum -y update
             yum install -y ruby
             yum install -y aws-cli
-            cd /home/ec2-user
-            wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
-            chmod +x ./install
-            ./install auto
             curl --silent --location https://rpm.nodesource.com/setup_6.x | sudo bash -
             sudo yum -y install nodejs
             cd /var
             mkdir nodeapp
+            cd /home/ec2-user
+            wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
+            chmod +x ./install
+            ./install auto
 
   AutoScaleGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -102,11 +102,19 @@ Resources:
         Fn::GetAZs: "us-east-1"
       MinSize: "2"
       MaxSize: "2"
+      LoadBalancerNames: !Ref LoadBalancer
       Tags:
         -
           Key: name
           Value: !Join [ '-' , [ !Ref GitHubRepoName, !Ref GitHubBranch ] ]
           PropagateAtLaunch: true
+
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Listeners:
+    - LoadBalancerPort: '8080'
+      InstancePort: '8080'
+      Protocol: TCP
 
   CodeDeployTrustRole:
     Type: AWS::IAM::Role
